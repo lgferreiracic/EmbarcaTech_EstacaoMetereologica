@@ -7,7 +7,7 @@ TimerHandle_t xBuzzerSilenceTimer;
 
 volatile uint32_t last_button_press_time = 0;
 volatile bool alarm_active = false;
-volatile bool alert_silenced = false; // Nova variável
+volatile bool alert_silenced = false; 
 
 bool matrix_alert_active = false;
 ssd1306_t ssd;  
@@ -35,6 +35,7 @@ void init_semaphores() {
     }
 }
 
+// Função para parar o alarme
 bool stop_alarm(struct repeating_timer *t) {
     if (xSemaphoreTake(xAlertMutex, 0) == pdTRUE) {
         alarm_active = false; // Desativa o alarme
@@ -52,13 +53,13 @@ bool stop_alarm(struct repeating_timer *t) {
     return true;
 }
 
+// Callback para o timer de silenciamento do buzzer
 void vBuzzerSilenceCallback(TimerHandle_t xTimer) {
     buzzer_silenced = false;
     alert_silenced = false; // Reativa o alerta visual também
     alert_silenced = false; //er e al Rtaeativa o alerta visual também
     printf("\nSilêncio do buzzer e alerta encerrado.\n");
 }
-
 
 // Função de interrupção para gerenciar os botões
 void irq_handler(uint gpio, uint32_t events){
@@ -77,6 +78,7 @@ void irq_handler(uint gpio, uint32_t events){
         }
 }
 
+// Tarefa para leitura dos sensores
 void vSensorTask(void *params) {
     init_i2c_sensor();      
     init_bmp280();        
@@ -88,6 +90,7 @@ void vSensorTask(void *params) {
     }
 }
 
+// Tarefa para gerenciar os alertas
 void vAlertTask(void *params) {
     // Inicializa os componentes necessários
     buzzer_init_all(); 
@@ -141,6 +144,7 @@ void vAlertTask(void *params) {
     }
 }
 
+// Tarefa para gerenciar o display
 void vDisplayTask(void *params) {
     display_init(&ssd); // Inicializa o display
     SensorReadings readings;
@@ -165,6 +169,7 @@ void vDisplayTask(void *params) {
     }
 }
 
+// Tarefa para gerenciar o servidor web
 void vWebServerTask(void *params) {
     server_init(); // Inicializa o servidor web
     web_server_initialized = true; // Marca o servidor como inicializado
@@ -175,6 +180,7 @@ void vWebServerTask(void *params) {
     cyw43_arch_deinit(); // Desativa o Wi-Fi ao finalizar a tarefa
 }
 
+// Função para lidar com as requisições HTP
 bool handle_http_request(const char *request, size_t request_size, char *response, size_t response_size){
     SensorReadings readings;
     if (request_size >= 9 && strncmp(request, "GET /data", 9) == 0){
@@ -198,6 +204,7 @@ bool handle_http_request(const char *request, size_t request_size, char *respons
     return false;
 }
 
+// Função para encerrar o alarme pela página
 void stop_alarm_web() {
     if (xSemaphoreTake(xAlertMutex, 0) == pdTRUE) {
         alarm_active = false;
@@ -214,6 +221,7 @@ void stop_alarm_web() {
     }
 }
 
+// Função para inicializar as tarefas
 void init_tasks() {
     xTaskCreate(vSensorTask, "Sensor Task", 256, NULL, 1, NULL);
     xTaskCreate(vAlertTask, "Alert Task", 256, NULL, 1, NULL);

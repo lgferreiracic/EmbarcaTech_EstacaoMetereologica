@@ -120,7 +120,6 @@ A arquitetura utiliza **múltiplas tarefas FreeRTOS** para operação concorrent
 ### Display OLED
 - **Modo Normal**: Dados meteorológicos + status do servidor
 - **Modo Alerta**: Dados + indicação visual de alarme
-- **Alternância**: Botão do joystick alterna cores (preto/branco)
 
 ## Testes e Validação
 
@@ -157,4 +156,4 @@ A arquitetura utiliza **múltiplas tarefas FreeRTOS** para operação concorrent
 
 ## Vídeo da Solução
 
-[Link do YouTube](https://www.youtube.com/)
+[Link do YouTube](https://www.youtube.com/watch?v=1kkM6SFJDTk)
